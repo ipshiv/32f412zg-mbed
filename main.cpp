@@ -3,6 +3,9 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 #include "mbed.h"
+#include "rtos.h"
+#include <cstdint>
+#include <stdint.h>
 #include <array>
 
 // Blinking rate in milliseconds
@@ -31,26 +34,59 @@ static int led_id = 0;
 
 static int blinking_rate = 200;
 
-void next_led()
+Queue<uint32_t, 16> event_queue;
+
+void button_handler(void)
 {
-	blinking_rate += 100;
+    printf(">> Buttons!\n");
+    while (true) {
+            osEvent evt = event_queue.get();
+            if (evt.status != osEventMessage) {
+                printf("queue->get() returned %02x status\n\r", evt.status);
+            } else {
+                printf("queue->get() returned %d\n\r", evt.value.v);
+            }
+            ThisThread::sleep_for(1s);
+        }
 }
 
-void prev_led()
+void log_up()
 {
-	blinking_rate -= 100;
+	// printf(">> Up!\n");
+    event_queue.put((uint32_t*)0);
+}
+
+void log_down()
+{
+	// printf(">> Down!\n");
+    event_queue.put((uint32_t*)1);
+}
+
+void log_left()
+{
+	// printf(">> Left\n");
+    event_queue.put((uint32_t*)2);
+}
+
+void log_right()
+{
+	// printf(">> Right\n");
+    event_queue.put((uint32_t*)3);
 }
 
 int main()
 {
-	b_up.rise(&next_led);
-	b_down.rise(&prev_led);
-	b_left.rise(&next_led);
-	b_right.rise(&prev_led);
+	b_up.rise(&log_up);
+	b_down.rise(&log_down);
+	b_left.rise(&log_left);
+	b_right.rise(&log_right);
 
 	std::array<DigitalOut, 4> leds = {
 		led_green, led_orange, led_red, led_blue
 	};
+
+    Thread thread;
+    thread.start(callback(button_handler));
 
 	while (true) {
 		for (auto &led : leds) {
@@ -58,5 +94,6 @@ int main()
 			ThisThread::sleep_for(blinking_rate);
 			led.write(1);
 		}
+
 	}
 }
