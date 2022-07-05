@@ -1,0 +1,17 @@
+{
+    "F412G_DISCO": {
+        "inherits": [
+            "MCU_STM32F412xG"
+        ],
+        "supported_form_factors": [
+            "ARDUINO_UNO"
+        ],
+        "detect_code": [
+            "0389"
+        ],
+        "device_has_add": [
+            "USBDEVICE"
+        ],
+        "device_name": "STM32F412ZGTx"
+    }
+}
