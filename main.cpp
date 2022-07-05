@@ -8,9 +8,6 @@
 #include <stdint.h>
 #include <array>
 
-// Blinking rate in milliseconds
-#define BLINKING_RATE 500ms
-
 #define GREEN LED1
 #define ORANGE LED2
 #define RED LED3
@@ -32,7 +29,7 @@ DigitalOut led_blue(BLUE);
 
 static int led_id = 0;
 
-static int blinking_rate = 200;
+static auto blinking_rate = 500ms;
 
 Queue<uint32_t, 16> event_queue;
 
