@@ -11,14 +11,14 @@
 // Blinking rate in milliseconds
 #define BLINKING_RATE 500ms
 
-#define GREEN PE_0
-#define ORANGE PE_1
-#define RED PE_2
-#define BLUE PE_3
-#define UP PG_0
-#define DOWN PG_1
-#define LEFT PF_15
-#define RIGHT PF_14
+#define GREEN LED1
+#define ORANGE LED2
+#define RED LED3
+#define BLUE LED4
+#define UP JOY_UP
+#define DOWN JOY_DOWN
+#define LEFT JOY_LEFT
+#define RIGHT JOY_RIGHT
 
 InterruptIn b_up(UP);
 InterruptIn b_down(DOWN);
