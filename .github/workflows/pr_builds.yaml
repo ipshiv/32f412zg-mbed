@@ -10,7 +10,7 @@ defaults:
 jobs:
   build:
     runs-on: ubuntu-latest
-    container: mbedos/mbed-os-env:stable
+    container: ghcr.io/armmbed/mbed-os-env:master-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -19,5 +19,5 @@ jobs:
       - name: Compile
         working-directory: app-f412g-starter
         run: |
-          mbed deploy
-          mbed compile -t GCC_ARM -m F412G_DISCO
+          mbedtools deploy
+          mbedtools compile -t GCC_ARM -m F412G_DISCO
