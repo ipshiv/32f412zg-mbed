@@ -12,6 +12,9 @@
         "device_has_add": [
             "USBDEVICE"
         ],
+        "macros_add": [
+            "STM32F412xG"
+        ],
         "device_name": "STM32F412ZGTx"
     }
 }
