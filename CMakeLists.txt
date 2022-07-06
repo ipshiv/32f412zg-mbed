@@ -5,13 +5,13 @@ cmake_minimum_required(VERSION 3.19.0)
 
 set(MBED_PATH ${CMAKE_CURRENT_SOURCE_DIR}/mbed-os CACHE INTERNAL "")
 set(MBED_CONFIG_PATH ${CMAKE_CURRENT_BINARY_DIR} CACHE INTERNAL "")
-set(APP_TARGET f412g-starter)
+set(APP_TARGET mbed-os-example-blinky)
 
 include(${MBED_PATH}/tools/cmake/app.cmake)
 
 project(${APP_TARGET})
 
-add_subdirectory(TARGET_F412G_DISCO)
+add_subdirectory(TARGET_DISCO_F412ZG)
 add_subdirectory(${MBED_PATH})
 
 add_executable(${APP_TARGET}

@@ -1,5 +1,5 @@
 {
-    "F412G_DISCO": {
+    "DISCO_F412ZG": {
         "inherits": [
             "MCU_STM32F412xG"
         ],
