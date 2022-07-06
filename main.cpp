@@ -38,40 +38,41 @@ Queue<uint32_t, 16> event_queue;
 
 void button_handler(void)
 {
-    printf(">> Buttons!\n");
-    while (true) {
-            osEvent evt = event_queue.get();
-            if (evt.status != osEventMessage) {
-                printf("queue->get() returned %02x status\n\r", evt.status);
-            } else {
-                printf("queue->get() returned %d\n\r", evt.value.v);
-            }
-            ThisThread::sleep_for(1s);
-        }
+	printf(">> Buttons!\n");
+	while (true) {
+		osEvent evt = event_queue.get();
+		if (evt.status != osEventMessage) {
+			printf("queue->get() returned %02x status\n\r",
+			       evt.status);
+		} else {
+			printf("queue->get() returned %d\n\r", evt.value.v);
+		}
+		ThisThread::sleep_for(1s);
+	}
 }
 
 void log_up()
 {
 	// printf(">> Up!\n");
-    event_queue.put((uint32_t*)0);
+	event_queue.put((uint32_t *)0);
 }
 
 void log_down()
 {
 	// printf(">> Down!\n");
-    event_queue.put((uint32_t*)1);
+	event_queue.put((uint32_t *)1);
 }
 
 void log_left()
 {
 	// printf(">> Left\n");
-    event_queue.put((uint32_t*)2);
+	event_queue.put((uint32_t *)2);
 }
 
 void log_right()
 {
 	// printf(">> Right\n");
-    event_queue.put((uint32_t*)3);
+	event_queue.put((uint32_t *)3);
 }
 
 int main()
@@ -85,8 +86,8 @@ int main()
 		led_green, led_orange, led_red, led_blue
 	};
 
-    Thread thread;
-    thread.start(callback(button_handler));
+	Thread thread;
+	thread.start(callback(button_handler));
 
 	while (true) {
 		for (auto &led : leds) {
@@ -94,6 +95,5 @@ int main()
 			ThisThread::sleep_for(blinking_rate);
 			led.write(1);
 		}
-
 	}
 }

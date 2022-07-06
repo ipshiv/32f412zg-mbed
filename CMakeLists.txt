@@ -1,32 +1,24 @@
-# Copyright (c) 2020 ARM Limited. All rights reserved.
+# Copyright (c) 2022 ARM Limited. All rights reserved.
 # SPDX-License-Identifier: Apache-2.0
 
-cmake_minimum_required(VERSION 3.19.0 FATAL_ERROR)
+cmake_minimum_required(VERSION 3.19.0)
 
 set(MBED_PATH ${CMAKE_CURRENT_SOURCE_DIR}/mbed-os CACHE INTERNAL "")
 set(MBED_CONFIG_PATH ${CMAKE_CURRENT_BINARY_DIR} CACHE INTERNAL "")
-set(APP_TARGET mbed-os-example-blinky)
+set(APP_TARGET f412g-starter)
 
 include(${MBED_PATH}/tools/cmake/app.cmake)
+
+project(${APP_TARGET})
 
 add_subdirectory(TARGET_F412G_DISCO)
 add_subdirectory(${MBED_PATH})
 
-add_executable(${APP_TARGET})
-
-mbed_configure_app_target(${APP_TARGET})
-
-project(${APP_TARGET})
-
-target_sources(${APP_TARGET}
-    PRIVATE
-        main.cpp
+add_executable(${APP_TARGET}
+    main.cpp
 )
 
-target_link_libraries(${APP_TARGET}
-    PRIVATE
-        mbed-os
-)
+target_link_libraries(${APP_TARGET} mbed-os)
 
 mbed_set_post_build(${APP_TARGET})
 
