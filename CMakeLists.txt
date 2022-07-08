@@ -13,16 +13,21 @@ project(${APP_TARGET})
 
 add_subdirectory(TARGET_DISCO_F412ZG)
 add_subdirectory(${MBED_PATH})
-add_subdirectory(button_handler)
+#add_subdirectory(button_handler)
 
 add_executable(${APP_TARGET}
     main.cpp
+    button_handler/src/button_handler.cpp
+)
+
+target_include_directories(${APP_TARGET}
+PRIVATE
+    button_handler/include
 )
 
 target_link_libraries(${APP_TARGET}
         mbed-os
         mbed-events
-        button_handler
         )
 
 mbed_set_post_build(${APP_TARGET})

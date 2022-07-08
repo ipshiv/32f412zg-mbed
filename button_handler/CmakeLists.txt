@@ -14,7 +14,7 @@ target_include_directories(button_handler
 )
 
 target_link_libraries(
-    button_handler
+        button_handler
         mbed-os
         mbed-events
         )
