@@ -26,7 +26,7 @@ using namespace std::chrono;
 
 class Button {
 public:
-  Button(PinName id, EventQueue *queue, Timer *t, Callback<void(int)> cb,
+  Button(PinName id, EventQueue *queue, Timer *t, void (*cb)(int),
          Callback<void()> handler) {
     pin = new InterruptIn(id);
     pin->rise(handler);
@@ -40,23 +40,26 @@ public:
 
   uint32_t id(void) { return (uint32_t)self_id; }
 
-  void checkButton() {
+  void checkButton(uint64_t timestamp) {
     if (events.empty())
       return;
 
     if (pin->read() != state) {
-      pin->disable_irq();
+      // pin->disable_irq();
 
       state = pin->read();
-      uint64_t timestamp =
-          duration_cast<milliseconds>(t->elapsed_time()).count();
+
+      // printf(">> Button %d, State: %s\n", self_id, state ? "UP" : "DOWN");
+
       for (auto &event : events) {
         bool is_emmited = event->updateButtonState(state, timestamp);
+        // printf(">>  Button %d >> Event %d >> Emmited: %s\n", self_id,
+        // event->type(), is_emmited ? "true" : "false");
         if (is_emmited)
-          queue->call(cb, event->type());
+          queue->call((*cb), event->type());
       }
 
-      pin->enable_irq();
+      // pin->enable_irq();
     }
   }
 
@@ -119,7 +122,7 @@ public:
 private:
   std::vector<ButtonEvent *> events;
   EventQueue *queue;
-  Callback<void(int)> cb;
+  void (*cb)(int);
   Timer *t;
   PinName self_id;
   InterruptIn *pin;

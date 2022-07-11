@@ -22,7 +22,6 @@ using namespace std::chrono;
 #define LEFT JOY_LEFT
 #define RIGHT JOY_RIGHT
 
-InterruptIn b_up(UP);
 InterruptIn b_down(DOWN);
 InterruptIn b_left(LEFT);
 InterruptIn b_right(RIGHT);
@@ -94,8 +93,8 @@ int main() {
   t.start();
   ButtonHandler handler;
   printf("attach button");
-  //	handler.attachButton(UP, &log_up);
-  // handler.registerEvent(UP, BUTTON_EVENT_PUSH, 200);
+  handler.attachButton(UP, &log_up);
+  handler.registerEvent(UP, BUTTON_EVENT_PUSH, 200);
   // handler.registerEvent(UP, BUTTON_EVENT_RELEASED, 200);
 
   queue_thread.start(callback(&queue, &EventQueue::dispatch_forever));

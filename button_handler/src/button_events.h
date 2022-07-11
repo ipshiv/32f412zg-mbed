@@ -24,6 +24,8 @@ public:
     evt_type = evt_type;
     event_length_ms = event_length_ms;
     debounce = debounce;
+    previous_state = false;
+    previous_timestamp = 0;
   }
   enum button_event type(void) { return evt_type; }
   virtual bool updateButtonState(bool is_pressed, uint64_t timestamp) = 0;

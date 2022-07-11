@@ -12,18 +12,16 @@
 #ifndef _BUTTON_HANDLER_H
 #define _BUTTON_HANDLER_H
 
+#include "button_event.h"
 #include "mbed.h"
 #include <stdint.h>
-#include "button_event.h"
 
 class ButtonHandler {
-    public:
-	ButtonHandler();
-	int attachButton(uint32_t button, Callback<void(int)> func);
-	int registerEvent(
-		uint32_t button,
-		enum button_event evt_type,
-		uint16_t evt_time);
+public:
+  ButtonHandler();
+  int attachButton(uint32_t button, void (*func)(int));
+  int registerEvent(uint32_t button, enum button_event evt_type,
+                    uint16_t evt_time);
 };
 
 #endif // _BUTTON_HANDLER_H
