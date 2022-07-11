@@ -54,6 +54,7 @@ int ButtonHandler::attachButton(uint32_t button, void (*func)(int)) {
 
   Button *new_button = new Button((PinName)button, &button_queue, &button_timer,
                                   func, isr_handler);
+  new_button->attachISRHandler(callback(new_button, &Button::buttonPressed));
   buttons.push_back(*new_button);
   printf("Attached\n");
   return 0;
