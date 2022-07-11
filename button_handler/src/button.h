@@ -29,8 +29,8 @@ public:
   Button(PinName id, EventQueue *queue, Timer *t, void (*cb)(int),
          Callback<void()> handler) {
     pin = new InterruptIn(id);
-    pin->rise(handler);
-    pin->fall(handler);
+    // pin->rise(buttonPressed);
+    // pin->fall(buttonReleased);
     state = pin->read();
     self_id = id;
     queue = queue;
@@ -39,6 +39,11 @@ public:
   }
 
   uint32_t id(void) { return (uint32_t)self_id; }
+
+  void attachISRHandler(Callback<void()> cb) {
+    pin->rise(cb);
+    pin->fall(cb);
+  }
 
   void checkButton(uint64_t timestamp) {
     if (events.empty())
