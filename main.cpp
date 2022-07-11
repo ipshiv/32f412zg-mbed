@@ -7,9 +7,7 @@
 #include <array>
 #include <cstdint>
 #include <stdint.h>
-#include <vector>
 
-#include "button.h"
 #include "button_event.h"
 #include "button_handler.h"
 
@@ -24,7 +22,7 @@ using namespace std::chrono;
 #define LEFT JOY_LEFT
 #define RIGHT JOY_RIGHT
 
-std::vector<Button *> bs;
+
 
 static auto blinking_rate = 500ms;
 
