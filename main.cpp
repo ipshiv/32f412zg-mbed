@@ -7,7 +7,9 @@
 #include <array>
 #include <cstdint>
 #include <stdint.h>
+#include <vector>
 
+#include "button.h"
 #include "button_event.h"
 #include "button_handler.h"
 
@@ -22,9 +24,7 @@ using namespace std::chrono;
 #define LEFT JOY_LEFT
 #define RIGHT JOY_RIGHT
 
-InterruptIn b_down(DOWN);
-InterruptIn b_left(LEFT);
-InterruptIn b_right(RIGHT);
+std::vector<Button *> bs;
 
 static auto blinking_rate = 500ms;
 
@@ -61,41 +61,20 @@ void led_handler(void) {
   }
 }
 
-void button_handler(int id, bool is_pressed, uint64_t timestamp) {
-  printf(">> @ %llu Button %d %s\n", timestamp, id,
-         is_pressed ? "pressed" : "released");
-  event_queue.try_put((uint32_t *)id);
-}
-
 void log_up(int evt) { printf(">>UP button >> evt %d\n", evt); }
 
-void log_down() {
-  queue.call(button_handler, 1, true,
-             duration_cast<milliseconds>(t.elapsed_time()).count());
-}
-
-void log_left() {
-  queue.call(button_handler, 2, true,
-             duration_cast<milliseconds>(t.elapsed_time()).count());
-}
-
-void log_right() {
-  queue.call(button_handler, 3, true,
-             duration_cast<milliseconds>(t.elapsed_time()).count());
-}
-
 int main() {
-  // b_up.rise(&log_up);
-  b_down.rise(&log_down);
-  b_left.rise(&log_left);
-  b_right.rise(&log_right);
-
-  t.start();
   ButtonHandler handler;
-  printf("attach button");
+  printf("Attach buttons to handler\n");
+
   handler.attachButton(UP, &log_up);
+
   handler.registerEvent(UP, BUTTON_EVENT_PUSH, 200);
-  // handler.registerEvent(UP, BUTTON_EVENT_RELEASED, 200);
+  handler.registerEvent(UP, BUTTON_EVENT_RELEASED, 200);
+
+  handler.attachButton(DOWN, &log_up);
+  handler.registerEvent(DOWN, BUTTON_EVENT_CLICK, 200);
+  handler.registerEvent(DOWN, BUTTON_EVENT_LONG_PRESS, 2000);
 
   queue_thread.start(callback(&queue, &EventQueue::dispatch_forever));
   led_thread.start(callback(led_handler));
