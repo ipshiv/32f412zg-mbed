@@ -1,0 +1,21 @@
+# Copyright (c) 2022 Huld Oy. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
+
+add_library(button_handler "")
+
+target_sources(button_handler
+    PRIVATE
+        ${CMAKE_CURRENT_SOURCE_DIR}/src/button_handler.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/src/button_event.c
+)
+
+target_include_directories(button_handler
+    PUBLIC
+        ${CMAKE_CURRENT_SOURCE_DIR}/include
+)
+
+target_link_libraries(
+        button_handler
+        mbed-os
+        mbed-events
+        )

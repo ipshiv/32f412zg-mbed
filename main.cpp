@@ -4,12 +4,16 @@
  */
 #include "mbed.h"
 #include "rtos.h"
+#include <array>
 #include <cstdint>
 #include <stdint.h>
-#include <array>
+#include <vector>
 
-// Blinking rate in milliseconds
-#define BLINKING_RATE 500ms
+#include "button.h"
+#include "button_event.h"
+#include "button_handler.h"
+
+using namespace std::chrono;
 
 #define GREEN LED1
 #define ORANGE LED2
@@ -20,80 +24,57 @@
 #define LEFT JOY_LEFT
 #define RIGHT JOY_RIGHT
 
-InterruptIn b_up(UP);
-InterruptIn b_down(DOWN);
-InterruptIn b_left(LEFT);
-InterruptIn b_right(RIGHT);
+std::vector<Button *> bs;
 
-DigitalOut led_green(GREEN);
-DigitalOut led_orange(ORANGE);
-DigitalOut led_red(RED);
-DigitalOut led_blue(BLUE);
+static auto blinking_rate = 500ms;
 
-static int led_id = 0;
+Queue<uint32_t, 32> event_queue;
+Thread led_thread;
 
-static int blinking_rate = 200;
+void led_handler(void) {
+  printf(">> Leds Init!\n");
 
-Queue<uint32_t, 16> event_queue;
+  int active_led = 0;
 
-void button_handler(void)
-{
-	printf(">> Buttons!\n");
-	while (true) {
-		osEvent evt = event_queue.get();
-		if (evt.status != osEventMessage) {
-			printf("queue->get() returned %02x status\n\r",
-			       evt.status);
-		} else {
-			printf("queue->get() returned %d\n\r", evt.value.v);
-		}
-		ThisThread::sleep_for(1s);
-	}
+  DigitalOut led_green(GREEN);
+  DigitalOut led_orange(ORANGE);
+  DigitalOut led_red(RED);
+  DigitalOut led_blue(BLUE);
+
+  std::array<DigitalOut *, 4> leds = {&led_green, &led_orange, &led_red,
+                                      &led_blue};
+
+  while (true) {
+    osEvent evt = event_queue.get();
+    if (evt.status == osEventMessage) {
+      leds[active_led]->write(0);
+      active_led = evt.value.v;
+    }
+    leds[active_led]->write(0);
+    ThisThread::sleep_for(blinking_rate);
+    leds[active_led]->write(1);
+    ThisThread::sleep_for(blinking_rate);
+  }
 }
 
-void log_up()
-{
-	// printf(">> Up!\n");
-	event_queue.put((uint32_t *)0);
-}
+void log_up(int evt) { printf(">>UP button >> evt %d\n", evt); }
 
-void log_down()
-{
-	// printf(">> Down!\n");
-	event_queue.put((uint32_t *)1);
-}
+int main() {
+  ButtonHandler handler;
+  printf("Attach buttons to handler\n");
 
-void log_left()
-{
-	// printf(">> Left\n");
-	event_queue.put((uint32_t *)2);
-}
+  handler.attachButton(UP, &log_up);
 
-void log_right()
-{
-	// printf(">> Right\n");
-	event_queue.put((uint32_t *)3);
-}
+  handler.registerEvent(UP, BUTTON_EVENT_PUSH, 200);
 
-int main()
-{
-	b_up.rise(&log_up);
-	b_down.rise(&log_down);
-	b_left.rise(&log_left);
-	b_right.rise(&log_right);
+  handler.attachButton(LEFT, &log_up);
+  handler.registerEvent(LEFT, BUTTON_EVENT_RELEASED, 200);
 
-	std::array<DigitalOut, 4> leds = {
-		led_green, led_orange, led_red, led_blue
-	};
+  handler.attachButton(DOWN, &log_up);
+  handler.registerEvent(DOWN, BUTTON_EVENT_CLICK, 200);
 
-	Thread thread;
-	thread.start(callback(button_handler));
+  handler.attachButton(RIGHT, &log_up);
+  handler.registerEvent(RIGHT, BUTTON_EVENT_LONG_PRESS, 2000);
 
-	while (true) {
-		for (auto &led : leds) {
-			led.write(0);
-			ThisThread::sleep_for(blinking_rate);
-			led.write(1);
-		}
-	}
+  led_thread.start(callback(led_handler));
 }
