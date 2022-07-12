@@ -20,4 +20,4 @@ jobs:
         working-directory: app-f412g-starter
         run: |
           mbedtools deploy
-          mbedtools compile -t GCC_ARM -m F412G_DISCO
+          mbedtools compile -t GCC_ARM -m DISCO_F412ZG
