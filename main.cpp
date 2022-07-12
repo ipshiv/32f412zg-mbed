@@ -35,7 +35,8 @@ EventQueue queue(32 * EVENTS_EVENT_SIZE);
 Thread queue_thread;
 Thread led_thread;
 
-void led_handler(void) {
+void led_handler(void)
+{
   printf(">> Leds Init!\n");
 
   int active_led = 0;
@@ -48,9 +49,11 @@ void led_handler(void) {
   std::array<DigitalOut *, 4> leds = {&led_green, &led_orange, &led_red,
                                       &led_blue};
 
-  while (true) {
+  while (true)
+  {
     osEvent evt = event_queue.get();
-    if (evt.status == osEventMessage) {
+    if (evt.status == osEventMessage)
+    {
       leds[active_led]->write(0);
       active_led = evt.value.v;
     }
@@ -63,18 +66,23 @@ void led_handler(void) {
 
 void log_up(int evt) { printf(">>UP button >> evt %d\n", evt); }
 
-int main() {
+int main()
+{
   ButtonHandler handler;
   printf("Attach buttons to handler\n");
 
   handler.attachButton(UP, &log_up);
 
   handler.registerEvent(UP, BUTTON_EVENT_PUSH, 200);
-  handler.registerEvent(UP, BUTTON_EVENT_RELEASED, 200);
+
+  handler.attachButton(LEFT, &log_up);
+  handler.registerEvent(LEFT, BUTTON_EVENT_RELEASED, 200);
 
   handler.attachButton(DOWN, &log_up);
   handler.registerEvent(DOWN, BUTTON_EVENT_CLICK, 200);
-  handler.registerEvent(DOWN, BUTTON_EVENT_LONG_PRESS, 2000);
+
+  handler.attachButton(RIGHT, &log_up);
+  handler.registerEvent(RIGHT, BUTTON_EVENT_LONG_PRESS, 2000);
 
   queue_thread.start(callback(&queue, &EventQueue::dispatch_forever));
   led_thread.start(callback(led_handler));
