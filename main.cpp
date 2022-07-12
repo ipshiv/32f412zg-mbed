@@ -28,11 +28,7 @@ std::vector<Button *> bs;
 
 static auto blinking_rate = 500ms;
 
-Timer t;
-
 Queue<uint32_t, 32> event_queue;
-EventQueue queue(32 * EVENTS_EVENT_SIZE);
-Thread queue_thread;
 Thread led_thread;
 
 void led_handler(void) {
@@ -80,6 +76,5 @@ int main() {
   handler.attachButton(RIGHT, &log_up);
   handler.registerEvent(RIGHT, BUTTON_EVENT_LONG_PRESS, 2000);
 
-  queue_thread.start(callback(&queue, &EventQueue::dispatch_forever));
   led_thread.start(callback(led_handler));
 }
