@@ -20,9 +20,6 @@ Timer button_timer;
 EventQueue button_queue(32 * EVENTS_EVENT_SIZE);
 Thread button_thread;
 
-// EventQueue handler_queue(32 * EVENTS_EVENT_SIZE);
-// Thread handler_thread;
-
 std::vector<Button> buttons;
 
 void b_checker(uint64_t timestamp) {
@@ -42,9 +39,6 @@ void isr_handler(void) {
 ButtonHandler::ButtonHandler() {
   button_timer.start();
   button_thread.start(callback(&button_queue, &EventQueue::dispatch_forever));
-  // handler_thread.start(callback(&handler_queue,
-  //                               &EventQueue::dispatch_forever));
-  printf("I'm button handler!\n");
 }
 
 int ButtonHandler::attachButton(uint32_t button, void (*func)(int)) {
