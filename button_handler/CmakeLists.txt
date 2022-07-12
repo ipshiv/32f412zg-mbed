@@ -6,6 +6,7 @@ add_library(button_handler "")
 target_sources(button_handler
     PRIVATE
         ${CMAKE_CURRENT_SOURCE_DIR}/src/button_handler.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/src/button_event.c
 )
 
 target_include_directories(button_handler

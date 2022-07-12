@@ -25,12 +25,18 @@ Thread button_thread;
 
 std::vector<Button> buttons;
 
+void b_checker(uint64_t timestamp) {
+
+  for (auto &b : buttons) {
+    b.checkButton(timestamp);
+  }
+}
+
 void isr_handler(void) {
+
   uint64_t timestamp =
       duration_cast<milliseconds>(button_timer.elapsed_time()).count();
-
-  for (auto &b : buttons)
-    b.checkButton(timestamp);
+  button_queue.call(b_checker, timestamp);
 }
 
 ButtonHandler::ButtonHandler() {
@@ -42,7 +48,7 @@ ButtonHandler::ButtonHandler() {
 }
 
 int ButtonHandler::attachButton(uint32_t button, void (*func)(int)) {
-  printf("Button size %d", buttons.size());
+
   if (buttons.size() == MAX_BUTTONS)
     return -1;
 
@@ -54,9 +60,9 @@ int ButtonHandler::attachButton(uint32_t button, void (*func)(int)) {
 
   Button *new_button = new Button((PinName)button, &button_queue, &button_timer,
                                   func, isr_handler);
-  new_button->attachISRHandler(callback(new_button, &Button::buttonPressed));
+  new_button->attachISRHandler(isr_handler);
   buttons.push_back(*new_button);
-  printf("Attached\n");
+  printf("Attached %ld\n", new_button->id());
   return 0;
 }
 
@@ -68,7 +74,7 @@ int ButtonHandler::registerEvent(uint32_t button, enum button_event evt_type,
   for (auto &b : buttons) {
     if (b.id() == button) {
       if (b.registerEvent(evt_type, evt_time, 200)) {
-        printf("button %ld registered", button);
+        printf("Button %ld >> Event %ld >> Registered\n", b.id(), evt_type);
         return 0;
       }
       break;
