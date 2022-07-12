@@ -68,6 +68,7 @@ bool click_event_update(struct event_state *self, bool is_pressed,
   return true;
 }
 
+// FIXME Double click don't work properly!
 bool d_click_event_update(struct event_state *self, bool is_pressed,
                           uint64_t timestamp) {
   static bool clicked_once = false;
