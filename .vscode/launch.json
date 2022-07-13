@@ -1,64 +1,38 @@
 {
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
     "version": "0.2.0",
     "configurations": [
-
         {
-            "name": "C++ Launch",
-            "type": "cppdbg",
-            "request": "attach",
-            "program": "${workspaceRoot}\\cmake_build\\DISCO_F412ZG\\develop\\GCC_ARM\\mbed-os-example-blinky.elf",
-            "args": ["gdbserver", "-p", "3333"],
-            "stopAtEntry": true,
-            "cwd": "${workspaceRoot}",
-            "environment": [],
-            "externalConsole": false,
-            "debugServerArgs": "",
-            "serverLaunchTimeout": 20000,
-            "filterStderr": true,
-            "filterStdout": false,
-            "serverStarted": "GDB\\ server\\ started",
-            "preLaunchTask": "pyocd",
-            "setupCommands": [
-                { "text": "-target-select remote localhost:3333", "description": "connect to target", "ignoreFailures": false },
-                { "text": "-file-exec-and-symbols ${workspaceRoot}\\cmake_build\\DISCO_F412ZG\\develop\\GCC_ARM\\mbed-os-example-blinky.elf", "description": "load file", "ignoreFailures": false},
-                { "text": "-interpreter-exec console \"monitor endian little\"", "ignoreFailures": false },
-                { "text": "-interpreter-exec console \"monitor reset\"", "ignoreFailures": false },
-                { "text": "-interpreter-exec console \"monitor halt\"", "ignoreFailures": false },
-                { "text": "-interpreter-exec console \"monitor arm semihosting enable\"", "ignoreFailures": false },
-                { "text": "-target-download", "description": "flash target", "ignoreFailures": false }
+        "cwd": "${workspaceRoot}",
+        "executable": "${workspaceRoot}/cmake_build/DISCO_F412ZG/develop/GCC_ARM/${workspaceFolderBasename}.elf",
+        "name": "Debug STM",
+        "request": "launch",
+        "type": "cortex-debug",
+        "servertype": "jlink",//The choice of debugging emulator, which can support opennocd, pyocd, pe and stutil
+        "runToMain": true, //Stop at the main function as soon as debugging
+        "device": "STM32F412ZG",//Model of the device
+        "interface": "swd",//SWD interface
+        "showDevDebugOutput": false,
+        "svdFile": "${workspaceRoot}/.vscode/STM32F412.svd",
+        "hardwareBreakpoints": {
+        "require": true,
+        "limit": 4
+      },
+        "configFiles": [
+                "interface/stlink-v2-1.cfg",
+                "target/stm32f4x.cfg"
             ],
-            "logging": {
-                "moduleLoad": true,
-                "trace": true,
-                "engineLogging": true,
-                "programOutput": true,
-                "exceptions": true
-            },
-            "linux": {
-                "MIMode": "gdb",
-                "MIDebuggerPath": "arm-none-eabi-gdb",
-                "debugServerPath": "pyocd-gdbserver"
-            },
-            "osx": {
-                "MIMode": "gdb",
-                "MIDebuggerPath": "arm-none-eabi-gdb",
-                "debugServerPath": "pyocd-gdbserver"
-            },
-            "windows": {
-                "preLaunchTask": "pyocd",
-                "MIMode": "gdb",
-                "MIDebuggerPath": "arm-none-eabi-gdb.exe",
-                "setupCommands": [
-                    { "text": "-environment-cd ${workspaceRoot}/cmake_build/DISCO_F412ZG/develop/GCC_ARM/" },
-                    { "text": "-target-select remote localhost:3333", "description": "connect to target", "ignoreFailures": false },
-                    { "text": "-file-exec-and-symbols ${workspaceRoot}\\cmake_build\\DISCO_F412ZG\\develop\\GCC_ARM\\mbed-os-example-blinky.elf", "description": "load file", "ignoreFailures": false},
-                    { "text": "-interpreter-exec console \"monitor endian little\"", "ignoreFailures": false },
-                    { "text": "-interpreter-exec console \"monitor reset\"", "ignoreFailures": false },
-                    { "text": "-interpreter-exec console \"monitor halt\"", "ignoreFailures": false },
-                    { "text": "-interpreter-exec console \"monitor arm semihosting enable\"", "ignoreFailures": false },
-                    { "text": "-target-download", "description": "flash target", "ignoreFailures": false }
+         "swoConfig": {
+                "enabled": true,
+                "cpuFrequency": 8000000,
+                "swoFrequency": 4000000,
+                "source": "probe",
+                "decoders": [
+                    { "type": "console", "label": "ITM", "port": 0 }
                 ]
             }
-        }
+        },
     ]
 }
