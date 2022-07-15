@@ -18,7 +18,6 @@ add_subdirectory(${MBED_PATH})
 add_executable(${APP_TARGET}
     main.cpp
     button_handler/src/button_handler.cpp
-    button_handler/src/button_event.c
 )
 
 target_include_directories(${APP_TARGET}

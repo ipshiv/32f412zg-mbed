@@ -15,6 +15,7 @@
 #include "button_event.h"
 #include "button_events.h"
 #include "mbed.h"
+#include <memory>
 #include <stdbool.h>
 #include <stdint.h>
 #include <vector>
@@ -26,6 +27,7 @@ using namespace std::chrono;
 
 class Button {
 public:
+  Button() = delete;
   Button(PinName id, EventQueue *queue, Timer *t, void (*cb)(int),
          Callback<void()> handler) {
     pin = new InterruptIn(id);
@@ -37,29 +39,27 @@ public:
     t = t;
     cb = cb;
   }
-
   uint32_t id(void) { return (uint32_t)self_id; }
+
+  void attachISRHandler(Callback<void()> cb) {
+    this->pin->rise(cb);
+    this->pin->fall(cb);
+  }
 
   void checkButton(uint64_t timestamp) {
     if (events.empty())
       return;
 
     if (pin->read() != state) {
-      // pin->disable_irq();
-
       state = pin->read();
 
-      // printf(">> Button %d, State: %s\n", self_id, state ? "UP" : "DOWN");
+      printf(">> Button %d, State: %s\n", self_id, state ? "UP" : "DOWN");
 
       for (auto &event : events) {
         bool is_emmited = event->updateButtonState(state, timestamp);
-        // printf(">>  Button %d >> Event %d >> Emmited: %s\n", self_id,
-        // event->type(), is_emmited ? "true" : "false");
-        if (is_emmited)
-          queue->call((*cb), event->type());
+        printf(">>  Button %d >> Event %d >> Emmited: %s\n", self_id,
+               event->type(), is_emmited ? "true" : "false");
       }
-
-      // pin->enable_irq();
     }
   }
 
@@ -93,26 +93,25 @@ public:
     ButtonEvent *new_event;
     switch (evt_type) {
     case (BUTTON_EVENT_PUSH):
-      new_event = new PushEvent(evt_type, event_length_ms, debounce);
+      new_event = (new PushEvent(evt_type, event_length_ms, debounce));
       break;
     case (BUTTON_EVENT_RELEASED):
-      new_event = new ReleaseEvent(evt_type, event_length_ms, debounce);
+      new_event = (new ReleaseEvent(evt_type, event_length_ms, debounce));
       break;
     case (BUTTON_EVENT_CLICK):
-      new_event = new ClickEvent(evt_type, event_length_ms, debounce);
+      new_event = (new ClickEvent(evt_type, event_length_ms, debounce));
       break;
     case (BUTTON_EVENT_DOUBLE_CLICK):
-      new_event = new DoubleClickEvent(evt_type, event_length_ms, debounce);
+      new_event = (new DoubleClickEvent(evt_type, event_length_ms, debounce));
       break;
     case (BUTTON_EVENT_LONG_PRESS):
-      new_event = new LongPress(evt_type, event_length_ms, debounce);
+      new_event = (new LongPress(evt_type, event_length_ms, debounce));
       break;
     default:
       return false;
     }
 
-    if (new_event == nullptr)
-      return false;
+    printf("Registered event %d\n", new_event->type());
 
     events.push_back(new_event);
 

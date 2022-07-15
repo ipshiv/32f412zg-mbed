@@ -19,21 +19,21 @@
 
 class ButtonEvent {
 public:
-  explicit ButtonEvent(enum button_event evt_type, uint16_t event_length_ms,
-                       uint16_t debounce) {
-    evt_type = evt_type;
-    event_length_ms = event_length_ms;
-    debounce = debounce;
-    previous_state = false;
-    previous_timestamp = 0;
+  ButtonEvent(enum button_event evt_type, uint16_t event_length_ms,
+              uint16_t debounce) {
+    this->evt_type = evt_type;
+    this->event_length_ms = event_length_ms;
+    this->debounce = debounce;
+    this->previous_state = false;
+    this->previous_timestamp = 0;
   }
-  enum button_event type(void) { return evt_type; }
+  enum button_event type(void) { return this->evt_type; }
   virtual bool updateButtonState(bool is_pressed, uint64_t timestamp) = 0;
 
 protected:
   void updateInternalState(bool is_pressed, uint64_t timestamp) {
-    previous_state = is_pressed;
-    previous_timestamp = timestamp;
+    this->previous_state = is_pressed;
+    this->previous_timestamp = timestamp;
   }
   enum button_event evt_type;
   uint16_t event_length_ms;
@@ -44,7 +44,9 @@ protected:
 
 class PushEvent : public ButtonEvent {
 public:
-  using ButtonEvent ::ButtonEvent;
+  PushEvent(enum button_event evt_type, uint16_t event_length_ms,
+            uint16_t debounce)
+      : ButtonEvent(evt_type, event_length_ms, debounce){};
   bool updateButtonState(bool is_pressed, uint64_t timestamp) {
     uint32_t time_interval = timestamp - previous_timestamp;
     if (time_interval > UINT16_MAX)
@@ -64,7 +66,9 @@ public:
 
 class ReleaseEvent : public ButtonEvent {
 public:
-  using ButtonEvent ::ButtonEvent;
+  ReleaseEvent(enum button_event evt_type, uint16_t event_length_ms,
+               uint16_t debounce)
+      : ButtonEvent(evt_type, event_length_ms, debounce){};
   bool updateButtonState(bool is_pressed, uint64_t timestamp) {
     uint32_t time_interval = timestamp - previous_timestamp;
     if (time_interval > UINT16_MAX)
@@ -84,7 +88,9 @@ public:
 
 class ClickEvent : public ButtonEvent {
 public:
-  using ButtonEvent ::ButtonEvent;
+  ClickEvent(enum button_event evt_type, uint16_t event_length_ms,
+             uint16_t debounce)
+      : ButtonEvent(evt_type, event_length_ms, debounce){};
   /**
    * @brief
    *
@@ -117,7 +123,9 @@ public:
 
 class DoubleClickEvent : public ButtonEvent {
 public:
-  using ButtonEvent ::ButtonEvent;
+  DoubleClickEvent(enum button_event evt_type, uint16_t event_length_ms,
+                   uint16_t debounce)
+      : ButtonEvent(evt_type, event_length_ms, debounce){};
   /**
    * @brief
    *
@@ -168,7 +176,9 @@ private:
 
 class LongPress : public ButtonEvent {
 public:
-  using ButtonEvent ::ButtonEvent;
+  LongPress(enum button_event evt_type, uint16_t event_length_ms,
+            uint16_t debounce)
+      : ButtonEvent(evt_type, event_length_ms, debounce){};
   /**
    * @brief
    *
